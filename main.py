@@ -20,17 +20,14 @@ def obter_links_videos(url):
 
 def baixar_trecho_meio_video(url, destino):
     yt = YouTube(url)
-    video = yt.streams.first()  # Obtém a primeira stream disponível (pode ajustar conforme necessário)
+    
+    # Obtém a stream de maior resolução disponível
+    video_stream = yt.streams.get_highest_resolution()
 
-    if video:
-        # Calcula a duração do vídeo e obtém o trecho do meio
-        duration = yt.length
-        meio_inicio = duration // 3
-        meio_fim = 2 * (duration // 3)
-
+    if video_stream:
         # Baixa o trecho do meio do vídeo
         caminho_salvar = os.path.join(destino, f'{yt.title}_trecho_meio.mp4')
-        video.download(output_path=destino, filename=f'{yt.title}_trecho_meio')
+        video_stream.download(output_path=destino, filename=f'{yt.title}_trecho_meio')
         print(f'Trecho do meio do vídeo baixado: {caminho_salvar}')
     else:
         print(f'Não foi possível encontrar uma stream para o vídeo: {url}')
@@ -39,7 +36,8 @@ if __name__ == "__main__":
     url_canal = 'https://www.youtube.com/@ujelbplus'  # Substitua pela URL do canal desejado
     links_videos = obter_links_videos(url_canal)
 
-    destino_videos = './videos'
+    destino_videos = 'C:\\Teteus\\DownCutYT\\videos'
+
     if not os.path.exists(destino_videos):
         os.makedirs(destino_videos)
 
