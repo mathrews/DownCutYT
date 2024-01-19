@@ -1,12 +1,11 @@
 import os
-import requests
-from bs4 import BeautifulSoup
 from pytube import YouTube
 from googleapiclient.discovery import build
+from moviepy.video.io.VideoFileClip import VideoFileClip
 
-def obter_links_videos_api  (api_key, channel_id):
+def obter_links_videos_api  (api_key):
     youtube = build('youtube', 'v3', developerKey=api_key)
-    playlist_items = youtube.playlistItems().list(part='contentDetails', playlistId=channel_id).execute()
+    playlist_items = youtube.playlistItems().list(part='contentDetails', playlistId='PLwdnFmzXKgfDpr-pVfxOV_dNJuLzFn8RD').execute()
 
     links_videos = []
 
@@ -17,27 +16,38 @@ def obter_links_videos_api  (api_key, channel_id):
 
     return links_videos
 
-def baixar_trecho_do_meio(url, destino):
+def baixar_trecho_do_meio(url, destino, fps=30):
     yt = YouTube(url)
-    
+
+    # Baixa o vídeo completo
+    caminho_original = os.path.join(destino, f'{yt.title}_original.mp4')
+    video_stream = yt.streams.filter(res='720p', subtype='mp4', progressive=True).first()
+    video_stream.download(output_path=destino)
+
     # Calcula o tempo de início e fim para o trecho de 2 segundos a partir do meio
     meio = yt.length / 2
-    inicio_trecho = max(meio - 1, 0)  # Começa 1 segundo antes do meio
-    fim_trecho = min(meio + 1, yt.length)  # Termina 1 segundo após o meio
+    inicio_trecho = max(meio - 2, 0)  # Começa 1 segundo antes do meio
+    fim_trecho = min(meio + 3, yt.length)  # Termina 1 segundo após o meio
 
-    # Baixa apenas o trecho desejado
-    video_stream = yt.streams.filter(subtype='mp4', progressive=True).first()
+    # Corta o trecho do vídeo
     caminho_trecho = os.path.join(destino, f'{yt.title}_trecho.mp4')
-    video_stream.download(output_path=destino, filename=f'{yt.title}_trecho', start=inicio_trecho, end=fim_trecho)
+    try:
+        video_clip = VideoFileClip(caminho_original)
+        video_clip_subclip = video_clip.subclip(inicio_trecho, fim_trecho)
+        video_clip_subclip.write_videofile(caminho_trecho, fps=fps, codec="libx264", audio_codec='aac', threads=4, verbose=False)
+        print(f'Trecho de 2 segundos do meio do vídeo baixado: {caminho_trecho}')
+        # Exclui o vídeo original
+        os.remove(caminho_original)
+    except Exception as e:
+        print(f'Erro ao processar o vídeo: {e}')
 
-    print(f'Trecho de 2 segundos do meio do vídeo baixado: {caminho_trecho}')
 
 if __name__ == "__main__":
     api_key = 'AIzaSyAux-INzqgqv1hEffmIx9s1lOdydq_tEwk'  # Substitua pela sua chave de API do YouTube
-    channel_id = 'ID_DO_CANAL'  # Substitua pelo ID do canal desejado
-    links_videos = obter_links_videos_api(api_key, channel_id)
+    channel_id = 'UCbqyhIVG2wd9DX6aoHW_6rw'  # Substitua pelo ID do canal desejado
+    links_videos = obter_links_videos_api(api_key)
 
-    destino_videos = 'C:\\Downloads'
+    destino_videos = 'C:\\Videos-UJELB+'
 
     if not os.path.exists(destino_videos):
         os.makedirs(destino_videos)
