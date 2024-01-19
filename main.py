@@ -24,10 +24,10 @@ def baixar_trecho_do_meio(url, destino, fps=30):
     video_stream = yt.streams.filter(res='720p', subtype='mp4', progressive=True).first()
     video_stream.download(output_path=destino)
 
-    # Calcula o tempo de início e fim para o trecho de 2 segundos a partir do meio
+    # Calcula o tempo de início e fim para o trecho de x segundos a partir do meio
     meio = yt.length / 2
-    inicio_trecho = max(meio - 2, 0)  # Começa 1 segundo antes do meio
-    fim_trecho = min(meio + 3, yt.length)  # Termina 1 segundo após o meio
+    inicio_trecho = max(meio - 2, 0)  # Começa x segundo antes do meio
+    fim_trecho = min(meio + 3, yt.length)  # Termina x segundo após o meio
 
     # Corta o trecho do vídeo
     caminho_trecho = os.path.join(destino, f'{yt.title}_trecho.mp4')
@@ -35,17 +35,17 @@ def baixar_trecho_do_meio(url, destino, fps=30):
         video_clip = VideoFileClip(f'{yt.title}_original.mp4')
         video_clip_subclip = video_clip.subclip(inicio_trecho, fim_trecho)
         video_clip_subclip.write_videofile(caminho_trecho, fps=fps, codec="libx264", audio_codec='aac', threads=4, verbose=False)
+        print(f'Trecho de 2 segundos do meio do vídeo baixado: {caminho_trecho}')
+        
+        # Exclui o vídeo original
+        os.remove(caminho_original)
     except Exception as e:
         print(f'Erro ao processar o vídeo: {e}')
 
-    print(f'Trecho de 2 segundos do meio do vídeo baixado: {caminho_trecho}')
-    
-    # Exclui o vídeo original
-    os.remove(caminho_original)
 
 if __name__ == "__main__":
-    api_key = 'AIzaSyAux-INzqgqv1hEffmIx9s1lOdydq_tEwk'  # Substitua pela sua chave de API do YouTube
-    channel_id = 'UCbqyhIVG2wd9DX6aoHW_6rw'  # Substitua pelo ID do canal desejado
+    api_key = 'AIzaSyAux-INzqgqv1hEffmIx9s1lOdydq_tEwk'
+    channel_id = 'UCbqyhIVG2wd9DX6aoHW_6rw'
     links_videos = obter_links_videos_api(api_key)
 
     destino_videos = 'C:\\Videos-UJELB+'
