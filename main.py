@@ -32,15 +32,16 @@ def baixar_trecho_do_meio(url, destino, fps=30):
     # Corta o trecho do vídeo
     caminho_trecho = os.path.join(destino, f'{yt.title}_trecho.mp4')
     try:
-        video_clip = VideoFileClip(caminho_original)
+        video_clip = VideoFileClip(f'{yt.title}_original.mp4')
         video_clip_subclip = video_clip.subclip(inicio_trecho, fim_trecho)
         video_clip_subclip.write_videofile(caminho_trecho, fps=fps, codec="libx264", audio_codec='aac', threads=4, verbose=False)
-        print(f'Trecho de 2 segundos do meio do vídeo baixado: {caminho_trecho}')
-        # Exclui o vídeo original
-        os.remove(caminho_original)
     except Exception as e:
         print(f'Erro ao processar o vídeo: {e}')
 
+    print(f'Trecho de 2 segundos do meio do vídeo baixado: {caminho_trecho}')
+    
+    # Exclui o vídeo original
+    os.remove(caminho_original)
 
 if __name__ == "__main__":
     api_key = 'AIzaSyAux-INzqgqv1hEffmIx9s1lOdydq_tEwk'  # Substitua pela sua chave de API do YouTube
