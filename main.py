@@ -2,19 +2,18 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from pytube import YouTube
+from googleapiclient.discovery import build
 
-def obter_links_videos(url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+def obter_links_videos_api  (api_key, channel_id):
+    youtube = build('youtube', 'v3', developerKey=api_key)
+    playlist_items = youtube.playlistItems().list(part='contentDetails', playlistId=channel_id).execute()
 
     links_videos = []
 
-    for link in soup.find_all('a'):
-        href = link.get('href')
-        if href and 'watch?v=' in href:
-            video_id = href.split('watch?v=')[1]
-            video_link = f'https://www.youtube.com/watch?v={video_id}'
-            links_videos.append(video_link)
+    for item in playlist_items['items']:
+        video_id = item['contentDetails']['videoId']
+        video_link = f'https://www.youtube.com/watch?v={video_id}'
+        links_videos.append(video_link)
 
     return links_videos
 
@@ -34,8 +33,9 @@ def baixar_trecho_do_meio(url, destino):
     print(f'Trecho de 2 segundos do meio do vídeo baixado: {caminho_trecho}')
 
 if __name__ == "__main__":
-    url_canal = 'https://www.youtube.com/@ujelbplus'  # Substitua pela URL do canal desejado
-    links_videos = obter_links_videos(url_canal)
+    api_key = 'AIzaSyAux-INzqgqv1hEffmIx9s1lOdydq_tEwk'  # Substitua pela sua chave de API do YouTube
+    channel_id = 'ID_DO_CANAL'  # Substitua pelo ID do canal desejado
+    links_videos = obter_links_videos_api(api_key, channel_id)
 
     destino_videos = 'C:\\Downloads'
 
