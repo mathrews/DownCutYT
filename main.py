@@ -6,7 +6,7 @@ import re
 
 def obter_links_videos_api  (api_key):
     youtube = build('youtube', 'v3', developerKey=api_key)
-    playlist_items = youtube.playlistItems().list(part='contentDetails', playlistId='PLwdnFmzXKgfDpr-pVfxOV_dNJuLzFn8RD').execute()
+    playlist_items = youtube.playlistItems().list(part='contentDetails', playlistId='PLwdnFmzXKgfCa3fxrZ-KKadSrZv70wC2B').execute()
 
     links_videos = []
 
@@ -40,7 +40,7 @@ def baixar_trecho_do_meio(url, destino, index):
 
         # Corta o trecho do vídeo
         print(F'CORTANDO O VÍDEO')
-        caminho_trecho = os.path.join(destino, f'{yt.title}_cute.mp4')
+        caminho_trecho = os.path.join(destino, f'cute_{index}.mp4')
 
         print(F'Caminho original {caminho_original}')
         video_clip = VideoFileClip(caminho_original).set_duration(yt.length)
