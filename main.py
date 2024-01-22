@@ -1,7 +1,7 @@
 import os
 from pytube import YouTube
 from googleapiclient.discovery import build
-from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy.editor import *
 
 def obter_links_videos_api  (api_key):
     youtube = build('youtube', 'v3', developerKey=api_key)
@@ -16,31 +16,29 @@ def obter_links_videos_api  (api_key):
 
     return links_videos
 
-def baixar_trecho_do_meio(url, destino, fps=30):
+def baixar_trecho_do_meio(url, destino):
     yt = YouTube(url)
 
     # Baixa o vídeo completo
-    caminho_original = os.path.join(destino, f'{yt.title}_original.mp4')
-    video_stream = yt.streams.filter(res='720p', subtype='mp4', progressive=True).first()
+    caminho_original = os.path.join(destino, f'{yt.title}.mp4')
+    video_stream = yt.streams.filter(subtype='mp4', progressive=True, res='720p').first()
     video_stream.download(output_path=destino)
 
     # Calcula o tempo de início e fim para o trecho de x segundos a partir do meio
     meio = yt.length / 2
-    inicio_trecho = max(meio - 2, 0)  # Começa x segundo antes do meio
-    fim_trecho = min(meio + 3, yt.length)  # Termina x segundo após o meio
+    inicio_trecho = meio - 2
+    fim_trecho = meio + 3
 
     # Corta o trecho do vídeo
     caminho_trecho = os.path.join(destino, f'{yt.title}_trecho.mp4')
-    try:
-        video_clip = VideoFileClip(f'{yt.title}_original.mp4')
-        video_clip_subclip = video_clip.subclip(inicio_trecho, fim_trecho)
-        video_clip_subclip.write_videofile(caminho_trecho, fps=fps, codec="libx264", audio_codec='aac', threads=4, verbose=False)
-        print(f'Trecho de 2 segundos do meio do vídeo baixado: {caminho_trecho}')
-        
-        # Exclui o vídeo original
-        os.remove(caminho_original)
-    except Exception as e:
-        print(f'Erro ao processar o vídeo: {e}')
+
+    video_clip = VideoFileClip(caminho_original).set_duration(yt.length)
+    video_clip_subclip = video_clip.subclip(inicio_trecho, fim_trecho)
+    video_clip_subclip.write_videofile(caminho_trecho, codec='libx264')
+    print(f'Trecho de 2 segundos do meio do vídeo baixado: {caminho_trecho}')
+    
+    # Exclui o vídeo original
+    os.remove(caminho_original)
 
 
 if __name__ == "__main__":
@@ -48,7 +46,7 @@ if __name__ == "__main__":
     channel_id = 'UCbqyhIVG2wd9DX6aoHW_6rw'
     links_videos = obter_links_videos_api(api_key)
 
-    destino_videos = 'C:\\Videos-UJELB+'
+    destino_videos = 'C:\\Teteus\\DownCutYT\\videos'
 
     if not os.path.exists(destino_videos):
         os.makedirs(destino_videos)
