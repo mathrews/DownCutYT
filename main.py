@@ -19,7 +19,6 @@ def obter_links_videos_api  (api_key):
 
 def baixar_trecho_do_meio(url, destino, index):
    
-
     try:
         print(F'Baixa o vídeo url: {url}, destino: {destino} e index: {index}')
         yt = YouTube(url)
