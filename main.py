@@ -4,9 +4,11 @@ from googleapiclient.discovery import build
 from moviepy.editor import *
 import re
 
-def obter_links_videos_api  (api_key):
+def obter_links_videos_api  (api_key, playlistId):
     youtube = build('youtube', 'v3', developerKey=api_key)
-    playlist_items = youtube.playlistItems().list(part='contentDetails', playlistId='PLwdnFmzXKgfCa3fxrZ-KKadSrZv70wC2B').execute()
+    playlist_items = youtube.playlistItems().list(part='contentDetails', playlistId=playlistId, maxResults=50).execute()
+    
+    print(playlist_items)
 
     links_videos = []
 
@@ -59,7 +61,11 @@ def baixar_trecho_do_meio(url, destino, index):
 if __name__ == "__main__":
     api_key = 'AIzaSyAux-INzqgqv1hEffmIx9s1lOdydq_tEwk'
     channel_id = 'UCbqyhIVG2wd9DX6aoHW_6rw'
-    links_videos = obter_links_videos_api(api_key)
+    link_playlists = ['PLwdnFmzXKgfAzwpQKeSg6kd8FrOZ0Qkr4', 'PLwdnFmzXKgfDpr-pVfxOV_dNJuLzFn8RD', 'PLwdnFmzXKgfCa3fxrZ-KKadSrZv70wC2B']
+    links_videos= []
+    
+    for link_playlist in link_playlists:
+        links_videos = links_videos + obter_links_videos_api(api_key, link_playlist)
 
     destino_videos = 'videos'
 
