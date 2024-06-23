@@ -76,7 +76,7 @@ def passar_playlist_ids (playlist=[]):
 
 def exec_all (): 
     if __name__ == "__main__":
-        api_key = 'AIzaSyAux-INzqgqv1hEffmIx9s1lOdydq_tEwk'
+        api_key = '<YOUR-API-KEY>'
         channel_id = '' # id do canal
         link_playlists = passar_playlist_ids() #id's das playlists
         links_videos= []
