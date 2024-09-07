@@ -4,6 +4,6 @@
 
 ## Comandos para rodar
 
-- Instalar libs: `pip install --user pytube moviepy google-api-python-client`
+- Instalar libs: `pip install --user pytube moviepy google-api-python-client python-dotenv`
 
 - rodar: `pyhon .\main.py`

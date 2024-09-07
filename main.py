@@ -3,7 +3,7 @@ import os
 from pytube import YouTube
 from googleapiclient.discovery import build
 from moviepy.editor import *
-import re
+from dotenv import load_dotenv
 
 def obter_links_videos_api  (api_key, playlistId):
     youtube = build('youtube', 'v3', developerKey=api_key)
@@ -76,8 +76,9 @@ def passar_playlist_ids (playlist=[]):
 
 def exec_all (): 
     if __name__ == "__main__":
-        api_key = '<YOUR-API-KEY>'
-        channel_id = '' # id do canal
+        load_dotenv()
+        api_key_env = os.getenv('API_KEY')
+        api_key = api_key_env
         link_playlists = passar_playlist_ids() #id's das playlists
         links_videos= []
         
